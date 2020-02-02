@@ -4,7 +4,7 @@ use File::Temp;
 
 class Text::VimColour:ver<0.4> {
     subset File of Str where -> $x { so $x && $x.IO.e };
-    subset Path of Str where -> $x { so $x && $x.IO.dirname.IO.e } 
+    subset Path of Str where -> $x { so $x && $x.IO.dirname.IO.e }
     has Path  $!out;
     has File  $!in;
     has Str   $!lang;
@@ -47,7 +47,14 @@ class Text::VimColour:ver<0.4> {
         return ~$0;
     }
 
-    method css  returns Str {
-        self.html-full-page ~~  m/  '<style type="text/css">'  (.*?) '</style>' / && ~$0;
+    method css returns Str {
+        #`< should match:
+            <style>
+            <!--
+            ...
+            -->
+            </style>
+        >
+        return self.html-full-page ~~  m/ '<style' \s* ['type="text/css"']? \s* '>' \s* ['<!--']? \s*  (.*?) \s*    ['-->']? \s* '</style>' / ?? ~$0 !! '';
     }
 }
