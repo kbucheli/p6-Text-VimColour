@@ -2,44 +2,42 @@
 use v6;
 use File::Temp;
 
-class Text::VimColour:ver<0.4> {
-    subset File of Str where -> $x { so $x && $x.IO.e };
-    subset Path of Str where -> $x { so $x && $x.IO.dirname.IO.e }
+class Text::VimColour:ver<0.5> {
+    subset File of Str where -> $x { ?$x && $x.IO.e }
+    subset Path of Str where -> $x { ?$x && $x.IO.dirname.IO.e }
     has Path  $!out;
     has File  $!in;
     has Str   $!lang;
 
     proto method BUILD(|z) {
         my $version = .[0] given split /','/, q:x/vim --version/ //'';
-        fail "didn't find a recent vim, found $version"  unless $version ~~ /' Vi IMproved '7\.4 || 8\. /;
+        fail "didn't find a recent vim, found $version" if $version !~~ /' Vi IMproved '7\.4 || 8\. /;
         {*}
         $!lang //= 'c';
-        my $vim-let = $*VIM-LET || "";
+        my $vim-let = $*VIM-LET || '';
 
-        %*ENV<EXRC>="set directory=/tmp";
+        %*ENV<EXRC>='set directory=/tmp';
         my $cmd = qq«
             vim -E -s -c 'let g:html_no_progress=1|syntax on|set noswapfile|set bg=light|set ft=$!lang|{$vim-let}|runtime syntax/2html.vim|wq! $!out|quit' -cqa $!in 2>/dev/null >/dev/null
         »;
         my $proc = shell $cmd;
-        fail "failed to run '$cmd', exit code {$proc.exitcode}" unless $proc.exitcode == 0;
+        fail "failed to run '$cmd', exit code {$proc.exitcode}" if $proc.exitcode != 0;
     }
 
     multi method BUILD(Str :$!lang, File :$!in,  Path :$!out) {};
 
     multi method BUILD(Str :$!lang, File :$!in) {
         $!out = tempfile[0];
-
     }
 
     multi method BUILD(Str  :$!lang, Str :$code where $code.chars > 0) {
         $!in  = tempfile[0];
         $!in.IO.spurt: $code;
         $!out = tempfile[0];
-
     }
 
     method html-full-page returns Str  {
-        $!out.IO.slurp;
+        return $!out.IO.slurp;
     }
 
     method html returns Str  {
@@ -49,12 +47,15 @@ class Text::VimColour:ver<0.4> {
 
     method css returns Str {
         #`< should match:
+            <style type="text/css"'>   ... </style>
+            OR
             <style>
             <!--
             ...
             -->
             </style>
         >
-        return self.html-full-page ~~  m/ '<style' \s* ['type="text/css"']? \s* '>' \s* ['<!--']? \s*  (.*?) \s*    ['-->']? \s* '</style>' / ?? ~$0 !! '';
+        my $extract_style = rx/'<style' \s* ['type="text/css"']? \s* '>' \s* ['<!--']? \s*  (.*?) \s*    ['-->']? \s* '</style>'/;
+        return self.html-full-page ~~  $extract_style ?? ~$0 !! '';
     }
 }

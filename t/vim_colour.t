@@ -2,15 +2,18 @@
 
 use v6;
 
-use lib 'lib';
+my $dir;
+BEGIN { $dir = $?FILE.IO.dirname} ;
+
+use lib "$dir/../lib";
 use Test;
 use Text::VimColour;
 
 plan 7;
 
 my $lang = 'perl6';
-my $in = 't/vim_colour.t';
-my $out = $?FILE.IO.dirname ~ $*SPEC.dir-sep ~ 'index.html';
+my $in = "$dir/vim_colour.t";
+my $out = "$dir/index.html";
 
 #unlink $out if $out.IO.f;
 
