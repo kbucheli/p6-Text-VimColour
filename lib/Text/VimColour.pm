@@ -27,25 +27,25 @@ class Text::VimColour:ver<0.5> {
     multi method BUILD(Str :$!lang, File :$!in,  Path :$!out) {};
 
     multi method BUILD(Str :$!lang, File :$!in) {
-        $!out = tempfile[0];
+        $!out = _tempfile;
     }
 
-    multi method BUILD(Str  :$!lang, Str :$code where $code.chars > 0) {
-        $!in  = tempfile[0];
+    multi method BUILD(Str :$!lang, Str :$code where $code.chars > 0) {
+        $!in  = _tempfile;
         $!in.IO.spurt: $code;
-        $!out = tempfile[0];
+        $!out = _tempfile;
     }
 
-    method html-full-page returns Str  {
+    method html-full-page( --> Str)  {
         return $!out.IO.slurp;
     }
 
-    method html returns Str  {
+    method html( --> Str)  {
         self.html-full-page ~~  m/  '<body' .*? '>'  (.*) '</body>' / ;
         return ~$0;
     }
 
-    method css returns Str {
+    method css( --> Str) {
         #`< should match:
             <style type="text/css"'>   ... </style>
             OR
@@ -57,5 +57,11 @@ class Text::VimColour:ver<0.5> {
         >
         my $extract_style = rx/'<style' \s* ['type="text/css"']? \s* '>' \s* ['<!--']? \s*  (.*?) \s*    ['-->']? \s* '</style>'/;
         return self.html-full-page ~~  $extract_style ?? ~$0 !! '';
+    }
+
+    sub _tempfile( --> Str) {
+        my ($name, $handle) = tempfile;
+        close $handle;
+        return $name;
     }
 }
