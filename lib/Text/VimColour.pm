@@ -3,8 +3,8 @@ use v6;
 use File::Temp;
 
 class Text::VimColour:ver<0.5> {
-    subset File of Str where -> $x { ?$x && $x.IO.e }
-    subset Path of Str where -> $x { ?$x && $x.IO.dirname.IO.e }
+    subset File of Str:D where -> $x { $x.IO.e }
+    subset Path of Str:D where -> $x { $x.IO.parent.d }
     has Path  $!out;
     has File  $!in;
     has Str   $!lang;
