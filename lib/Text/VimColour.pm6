@@ -8,7 +8,6 @@ class Text::VimColour:ver<0.5> {
     has Path  $!out;
     has File  $!in;
     has Str   $!lang;
-    has @!tempfiles;
 
     proto method BUILD(|z) {
         my $version = .[0] given split /','/, q:x/vim --version/ //'';
