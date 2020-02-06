@@ -4,7 +4,7 @@
     "version"     : "0.4",
     "description" : "Converts scripts into colour syntax HTML using vim. ",
     "authors"     : ["Konrad Bucheli <konrad.bucheli@gmx.ch>","Steve Mynott <steve.mynott@gmail.com>"],
-    "depends"     : [],
+    "depends"     : ["File::Temp"],
     "provides"    : {
             "Text::VimColour": "lib/Text/VimColour.pm6"
     },

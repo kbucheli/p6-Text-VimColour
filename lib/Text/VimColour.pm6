@@ -1,11 +1,14 @@
 #!/usr/bin/env perl6
 
+use File::Temp;
+
 class Text::VimColour:ver<0.5> {
     subset File of Str:D where -> $x { $x.IO.e }
     subset Path of Str:D where -> $x { $x.IO.parent.d }
     has Path  $!out;
     has File  $!in;
     has Str   $!lang;
+    has @!tempfiles;
 
     proto method BUILD(|z) {
         my $version = .[0] given split /','/, q:x/vim --version/ //'';
@@ -29,9 +32,8 @@ class Text::VimColour:ver<0.5> {
     }
 
     multi method BUILD(Str :$!lang, Str :$code where $code.chars > 0) {
-        my $temp = _tempfile;
-        $temp.IO.spurt: $code;
-        $!in = $temp;
+        $!in = _tempfile;
+        $!in.IO.spurt: $code;
         $!out = _tempfile;
     }
 
@@ -58,12 +60,9 @@ class Text::VimColour:ver<0.5> {
         return self.html-full-page ~~  $extract_style ?? ~$0 !! '';
     }
 
-    # File::Temp is not used as it leaks file handles not needed here
     sub _tempfile( --> Str) {
-        my $file = $*TMPDIR.add('VimColour' ~ (^9999999).pick);
-        while ($file.e) {
-            $file = $file.succ;
-        }
-        return $file.Str;
+        my ($name, $handle) = tempfile('VimColour_*******');
+        close $handle; # do not leak file handles
+        return $name;
     }
 }
