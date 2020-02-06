@@ -1,6 +1,4 @@
 #!/usr/bin/env perl6
-use v6;
-use File::Temp;
 
 class Text::VimColour:ver<0.5> {
     subset File of Str:D where -> $x { $x.IO.e }
@@ -31,8 +29,9 @@ class Text::VimColour:ver<0.5> {
     }
 
     multi method BUILD(Str :$!lang, Str :$code where $code.chars > 0) {
-        $!in  = _tempfile;
-        $!in.IO.spurt: $code;
+        my $temp = _tempfile;
+        $temp.IO.spurt: $code;
+        $!in = $temp;
         $!out = _tempfile;
     }
 
@@ -59,9 +58,12 @@ class Text::VimColour:ver<0.5> {
         return self.html-full-page ~~  $extract_style ?? ~$0 !! '';
     }
 
+    # File::Temp is not used as it leaks file handles not needed here
     sub _tempfile( --> Str) {
-        my ($name, $handle) = tempfile;
-        close $handle;
-        return $name;
+        my $file = $*TMPDIR.add('VimColour' ~ (^9999999).pick);
+        while ($file.e) {
+            $file = $file.succ;
+        }
+        return $file.Str;
     }
 }
