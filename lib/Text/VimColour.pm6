@@ -2,7 +2,7 @@
 
 use File::Temp;
 
-class Text::VimColour:ver<0.5> {
+class Text::VimColour:ver<0.5.0> {
     subset File of Str:D where -> $x { $x.IO.e }
     subset Path of Str:D where -> $x { $x.IO.parent.d }
     has Path  $!out;

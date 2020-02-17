@@ -18,5 +18,5 @@
   "source-url" : "git://github.com/kbucheli/p6-Text-VimColour.git",
   "tags" : [ ],
   "test-depends" : [ ],
-  "version" : "0.5"
+  "version" : "0.5.0"
 }
