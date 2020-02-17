@@ -1,7 +1,5 @@
 Revision history for Text-VimColour
 
 {{$NEXT}}
-
-0.5.0 2020-02-17T21:36+01:00
     - make it run for vim 8.2
     - avoid leaking of temporary filehandles
