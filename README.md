@@ -2,7 +2,7 @@
 
 Converts language source code into colour syntax HTML using vim.
 
-Idea was shamelessly stolen from the original Perl 5 Text::VimColor
+Idea was shamelessly stolen from the original [Perl 5 Text::VimColor](https://metacpan.org/pod/Text::VimColor).
 
 Pull requests welcome.
 
@@ -19,8 +19,8 @@ also install updated
 ```perl6
     use Text::VimColour;
     Text::VimColour.new(
-        lang => "perl6",
-        in   => "file-to-highlight.p6",
+        lang => 'perl6',
+        in   => 'file-to-highlight.p6',
         out  => '/tmp/out.html'
     );
 ```
