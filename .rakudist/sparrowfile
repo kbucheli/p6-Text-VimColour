@@ -1,0 +1,5 @@
+package-install %(
+  alpine => "vim",
+  debian => "vim",
+  centos => "vim-enhanced"
+);
